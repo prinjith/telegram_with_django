@@ -1,0 +1,64 @@
+version: '3.3'
+
+networks:
+    portfolio:
+        external:
+          name: portfolio
+
+services:
+
+  
+
+  db:
+
+    image: postgres:14.7
+    container_name: postgres_database
+    volumes: 
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks: 
+      - portfolio
+    ports:
+       - "5432:5432"
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+     - 8080:8080
+    networks: 
+     - portfolio
+  django:
+    image: django_docker:0.01
+    container_name: django
+    build: .
+    ports:
+     - "8000:8000"
+    volumes:
+      - .:/CODE
+    command: >
+       python3 manage.py runserver 0.0.0.0:8000 
+    networks: 
+    - portfolio
+    depends_on:
+    - db
+
+  bot:
+    image: alpine
+    container_name: bot
+    restart: always
+    build: .
+    volumes:
+      - .:/CODE
+    command: >
+      sh -c "cd telegram_bot &&
+          python3 telegram_bot.py"
+
+volumes:
+  db-data:
+
+
+

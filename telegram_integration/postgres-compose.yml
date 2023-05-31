@@ -1,0 +1,32 @@
+version: '3.3'
+
+networks:
+    portfolio:
+        external:
+          name: portfolio
+
+services:
+
+
+  db:
+
+   image: postgres:14.7
+   volumes: 
+    - db-data:/var/lib/postgresql/data
+   environment:
+    - POSTGRES_DB=postgres
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+   networks: 
+    - portfolio
+  #  ports:
+  #     - "5434:5434"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+     - 8080:8080
+    networks: 
+     - portfolio
+volumes:
+  db-data:
